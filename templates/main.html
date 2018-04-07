@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="text-align: center; margin: 1em;">{{now|timefmt}}</div>
+{% for p in posts %}
+<article class="search-result">
+    <strong><big><a href="{{p.url}}">{{p.title}}</a></big></strong>
+    <div>{{p.content if p.content is not none}}</div>
+    <address>{{p.channel.name}} - {{p.date|timefmt}}</address>
+</article>
+{% endfor %}
+{% endblock %}

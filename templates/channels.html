@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+{% for ch in channels %}
+<div class="search-result">
+    {% if ch.image %}
+    <img src="{{ch.image}}" class="channel-image">
+    {% endif %}
+    <strong><big><a href="{{ch.home}}">{{ch.name}}</a></big></strong>
+    <br>
+    <small><a href="{{ch.home}}">{{ch.home}}</a></small>
+</div>
+{% endfor %}
+{% endblock %}
