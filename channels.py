@@ -54,12 +54,18 @@ class Channel():
             url = ''
             if 'link' in item:
                 url = item['link']
+            media = []
+            if 'enclosures' in item:
+                media += item['enclosures']
+                for m in media:
+                    m['filename'] = m['href'].split('/')[-1]
             posts.append({
                 'title': item['title'],
                 'url': url,
                 'content': content,
                 'channel': self.channel,
                 'date': date,
+                'media': media,
             })
         return posts
 
@@ -104,6 +110,10 @@ class Channel():
     @property
     def stream(self):
         return self.get_property('stream')
+
+    @property
+    def media(self):
+        return self.get_property('media')
 
     def get_property(self, name):
         if type(self.channel) is str:

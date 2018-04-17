@@ -5,6 +5,11 @@
 <article class="search-result">
     <strong><big><a href="{{p.url}}">{{p.title}}</a></big></strong>
     <div>{{p.content if p.content is not none}}</div>
+    <small>
+    {% for m in p.media %}
+    <p><a href="{{m.href}}">{{m.filename}}</a></p>
+    {% endfor %}
+    </small>
     <address>{{p.channel.name}} - {{p.date|timefmt}}</address>
 </article>
 {% endfor %}
