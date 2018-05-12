@@ -13,6 +13,8 @@ twitch_apiurl_base = 'https://api.twitch.tv/kraken/'
 twitch_client_id = 'dl1xe55lg2y26u8njj769lxhq3i47r'
 twitch_accept = 'application/vnd.twitchtv.v5+json'
 
+max_content_length = 370
+
 class Channel():
     def __init__(self, channel):
         self.channel = channel
@@ -41,14 +43,22 @@ class Channel():
                     s = HTMLStripper()
                     s.feed(item['content'][0]['value'])
                     content = s.get_data()
-                if len(content) > 200:
-                    content = content[:200] + '...'
+                if len(content) > max_content_length:
+                    content = content[:max_content_length] + '...'
+            if content is None and 'description' in item:
+                s = HTMLStripper()
+                s.feed(item['description'])
+                content = s.get_data()
+                if len(content) > max_content_length:
+                    content = content[:max_content_length] + '...'
+
+            date = None
             if 'published_parsed' in item:
                 date = item['published_parsed']
-            elif 'updated_parsed' in item:
+            if date is None and'updated_parsed' in item:
                 date = item['updated_parsed']
-            else:
-                date = ''
+            if date is None and 'published' in item:
+                date = dateutil.parser.parse(item['published']).timetuple()
             if date:
                 date = datetime.fromtimestamp(mktime(date)).astimezone(get_localzone())
             url = ''
@@ -172,7 +182,12 @@ class Channel():
         req.add_header('Client-ID', twitch_client_id)
         response = str(urllib.request.urlopen(req).read(), 'utf-8')
         obj = json.loads(response)
-        user = obj['users'][0]
+        users = obj['users']
+        if len(users) > 0:
+            user = users[0]
+        else:
+            print("User not found: {}".format(url))
+            return None
 
         name = user['display_name']
         home = 'https://www.twitch.tv/' + user['name']
